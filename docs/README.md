@@ -5,7 +5,7 @@ This documentation is for people using the RHOAI Data Registry and its API.
 ## API reference
 
 - [OpenAPI contract](../api-contract/data-registry-api.yaml) — machine-readable API specification.
-- [Generated API reference HTML](../api-contract/data-registry-api.html) — GitHub shows the source. Download it and the adjacent [OpenAPI contract](../api-contract/data-registry-api.yaml) into the same directory, then open the HTML in a browser.
+- [Rendered API reference](https://opendatahub-io.github.io/data-registry/) — browse the operations and download the contract.
 
 ## User guide
 

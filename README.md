@@ -7,7 +7,7 @@ The repository contains the OpenAPI contract and a customer-facing user guide.
 ## Start here
 
 - [Data Registry API user guide](docs/user-guide/README.md) — getting started, authentication, authorization, and auditing and logging.
-- [OpenAPI contract](api-contract/data-registry-api.yaml) and [generated API reference HTML](api-contract/data-registry-api.html). GitHub shows the HTML source; download both files into the same directory and open the HTML in a browser to view the rendered reference and use its specification link.
+- [Rendered API reference](https://opendatahub-io.github.io/data-registry/) and [OpenAPI contract](api-contract/data-registry-api.yaml).
 - [Documentation index](docs/README.md) — the documentation map and related resources.
 
 ## Current implementation

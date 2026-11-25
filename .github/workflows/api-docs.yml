@@ -4,6 +4,7 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   api-docs:
@@ -25,3 +26,33 @@ jobs:
         run: |
           git ls-files --error-unmatch api-contract/data-registry-api.html
           git diff --exit-code -- api-contract/data-registry-api.html
+
+  deploy:
+    needs: api-docs
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && github.repository == 'opendatahub-io/data-registry'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - name: Stage API reference
+        run: |
+          mkdir -p _site
+          cp api-contract/data-registry-api.html _site/index.html
+          cp api-contract/data-registry-api.yaml _site/data-registry-api.yaml
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: _site
+      - uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+        id: deployment

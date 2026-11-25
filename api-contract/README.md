@@ -9,12 +9,11 @@ marked `x-rhoai-extension: true`; this does not imply full Iceberg REST
 compatibility. OpenAPI-generated clients may help with experimentation, but are
 not supported product SDKs.
 
-[`data-registry-api.html`](data-registry-api.html) is the generated reference. GitHub
-shows its source; download both the HTML and
-[`data-registry-api.yaml`](data-registry-api.yaml) into the same directory, then
-open the HTML in a browser. The page's specification download link requires the
-adjacent YAML file. Use Node.js 24.4.1 and npm 10 or later to regenerate and
-validate it with the pinned Redocly CLI:
+[Browse the rendered API reference](https://opendatahub-io.github.io/data-registry/).
+[`data-registry-api.html`](data-registry-api.html) is its generated source. The
+published page includes the adjacent YAML file for its specification download
+link. Use Node.js 24.4.1 and npm 10 or later to regenerate and validate it with
+the pinned Redocly CLI:
 
 ```bash
 npm ci
