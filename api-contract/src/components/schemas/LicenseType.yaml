@@ -1,0 +1,3 @@
+type: string
+enum: [internal-use, cc-by-4.0, apache-2.0, proprietary, restricted]
+description: Allowed data license values.

@@ -1,0 +1,54 @@
+type: object
+required: [table-uuid, location, last-updated-ms, properties, schemas]
+properties:
+  format-version:
+    type: integer
+    default: 2
+  table-uuid:
+    type: string
+    format: uuid
+  location:
+    type: string
+  last-updated-ms:
+    type: integer
+    format: int64
+  properties:
+    type: object
+    additionalProperties:
+      type: string
+  schemas:
+    type: array
+    items:
+      $ref: ./IcebergSchema.yaml
+  current-schema-id:
+    type: integer
+    default: 0
+  partition-specs:
+    type: array
+    items:
+      $ref: ./PartitionSpec.yaml
+  default-spec-id:
+    type: integer
+    default: 0
+  sort-orders:
+    type: array
+    items:
+      $ref: ./SortOrder.yaml
+  default-sort-order-id:
+    type: integer
+    default: 0
+  last-column-id:
+    type: integer
+    default: 0
+  last-sequence-number:
+    type: integer
+    default: 0
+  last-partition-id:
+    type: integer
+    default: 999
+  snapshots:
+    type: array
+    items: {}
+  current-snapshot-id:
+    type: integer
+    default: -1

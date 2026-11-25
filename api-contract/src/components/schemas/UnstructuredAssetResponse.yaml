@@ -1,0 +1,11 @@
+description: Unstructured volume asset response.
+allOf:
+  - $ref: ./AssetResponseBase.yaml
+  - type: object
+    required: [asset_type, format]
+    properties:
+      asset_type:
+        const: volume
+        description: Asset type for unstructured volume assets.
+      format:
+        $ref: ./UnstructuredFormat.yaml

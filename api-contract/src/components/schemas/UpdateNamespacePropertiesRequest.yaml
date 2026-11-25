@@ -1,0 +1,10 @@
+type: object
+properties:
+  updates:
+    type: object
+    additionalProperties:
+      type: string
+  removals:
+    type: array
+    items:
+      type: string

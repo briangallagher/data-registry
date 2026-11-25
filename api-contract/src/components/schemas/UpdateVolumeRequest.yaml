@@ -1,0 +1,7 @@
+description: Partial update for an unstructured asset.
+allOf:
+  - $ref: ./UpdateAssetRequest.yaml
+  - type: object
+    properties:
+      format:
+        $ref: ./UnstructuredFormat.yaml

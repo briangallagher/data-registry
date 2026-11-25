@@ -1,0 +1,7 @@
+type: object
+required: [identifiers]
+properties:
+  identifiers:
+    type: array
+    items:
+      $ref: ./TableIdentifier.yaml

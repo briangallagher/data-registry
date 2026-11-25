@@ -1,0 +1,59 @@
+description: |
+  Request model for registering an asset. Storage references are optional: metadata-only
+  assets are valid, and an asset may use `connection_ref` instead of `storage_location`.
+  The owner is assigned by the server from the authenticated creator identity and must
+  not be included in the request. The collection is supplied by the required path
+  parameter and is not part of the request body.
+type: object
+required: [name, format]
+properties:
+  name:
+    type: string
+  format:
+    type: string
+    description: Asset format. The concrete allowed values are defined by the asset type.
+  storage_location:
+    type: string
+    description: Optional direct storage location. May be omitted for metadata-only assets or when `connection_ref` identifies the storage.
+  connection_ref:
+    anyOf:
+      - $ref: ./ConnectionRef.yaml
+      - type: 'null'
+    description: Optional connection reference. Metadata-only assets may omit both storage references.
+  description:
+    type: ['string', 'null']
+    description: Optional description. A null value leaves the asset without a description.
+  purpose:
+    type: ['string', 'null']
+    description: Intended use of the data. Round-trips as `properties.purpose`.
+  license:
+    anyOf:
+      - $ref: ./LicenseType.yaml
+      - type: 'null'
+    description: Data license or usage terms. Round-trips as `properties.license`.
+  maturity:
+    anyOf:
+      - $ref: ./MaturityType.yaml
+      - type: 'null'
+    description: "Lifecycle stage (e.g. experimental, staging, production, deprecated). Round-trips as `properties.maturity`."
+  domain:
+    type: ['string', 'null']
+    description: Business domain. Round-trips as `properties.domain`.
+  pii:
+    anyOf:
+      - $ref: ./PiiStatus.yaml
+      - type: 'null'
+    description: PII classification. Round-trips as `properties.pii`.
+  labels:
+    type: array
+    items:
+      type: string
+    description: Labels to assign to this asset
+  properties:
+    type: object
+    additionalProperties:
+      type: string
+    description: |
+      Arbitrary metadata. Governance fields use the canonical keys `purpose`, `license`,
+      `maturity`, `domain`, and `pii` when returned in the response `properties` map.
+      Explicit properties are preserved alongside these mapped fields.

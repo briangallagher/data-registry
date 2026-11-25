@@ -1,0 +1,9 @@
+type: object
+properties:
+  order-id:
+    type: integer
+    default: 0
+  fields:
+    type: array
+    items: {}
+    default: []

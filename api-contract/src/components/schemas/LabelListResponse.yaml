@@ -1,0 +1,8 @@
+type: object
+required: [labels]
+properties:
+  labels:
+    type: array
+    items:
+      type: string
+    description: Sorted list of label names available in the project

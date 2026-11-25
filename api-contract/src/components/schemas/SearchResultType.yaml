@@ -1,0 +1,5 @@
+type: string
+enum: [table, volume, collection]
+description: |
+  Asset class on a search hit after alias resolution. Never `dataset`,
+  `iceberg_table`, `document_collection`, or `vector_index`.

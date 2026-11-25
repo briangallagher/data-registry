@@ -1,0 +1,12 @@
+type: object
+required: [metadata-location, metadata]
+properties:
+  metadata-location:
+    type: string
+  metadata:
+    $ref: ./TableMetadata.yaml
+  config:
+    type: object
+    additionalProperties:
+      type: string
+    description: Reserved for future use. Currently empty.

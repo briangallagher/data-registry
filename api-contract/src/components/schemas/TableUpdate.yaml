@@ -1,0 +1,21 @@
+type: object
+required: [action]
+properties:
+  action:
+    type: string
+    description: |
+      Only `set-properties` and `remove-properties` are supported in Phase 1.
+      Other actions (e.g. `add-schema`) return 501.
+  updates:
+    type: object
+    additionalProperties:
+      type: string
+    description: Properties to set (for `set-properties` action)
+  removals:
+    type: array
+    items:
+      type: string
+    description: Property keys to remove (for `remove-properties` action)
+  schema:
+    $ref: ./IcebergSchema.yaml
+    description: Schema for `add-schema` action (not supported in Phase 1)

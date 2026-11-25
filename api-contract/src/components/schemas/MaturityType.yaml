@@ -1,0 +1,3 @@
+type: string
+enum: [experimental, staging, production, deprecated]
+description: Asset lifecycle stage.

@@ -1,0 +1,12 @@
+type: object
+description: |
+  Stable connection reference. DCH references use type and id; RHOAI references
+  use type and secret_name.
+discriminator:
+  propertyName: type
+  mapping:
+    dch: ./DchConnectionRef.yaml
+    secret: ./SecretConnectionRef.yaml
+oneOf:
+  - $ref: ./DchConnectionRef.yaml
+  - $ref: ./SecretConnectionRef.yaml

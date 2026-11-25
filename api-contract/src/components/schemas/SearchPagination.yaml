@@ -1,0 +1,23 @@
+type: object
+required: [page, limit]
+properties:
+  page:
+    type: integer
+    minimum: 1
+  limit:
+    type: integer
+    minimum: 1
+  totalCount:
+    type: integer
+    minimum: 0
+    description: Omitted when there are zero hits
+  totalPages:
+    type: integer
+    minimum: 0
+    description: Omitted when there are zero hits
+  hasNext:
+    type: boolean
+    description: Present only when true
+  hasPrevious:
+    type: boolean
+    description: Present only when true

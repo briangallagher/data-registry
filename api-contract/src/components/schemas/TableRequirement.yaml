@@ -1,0 +1,11 @@
+type: object
+required: [type]
+properties:
+  type:
+    type: string
+  ref:
+    type: string
+  uuid:
+    type: string
+  last-assigned-field-id:
+    type: integer

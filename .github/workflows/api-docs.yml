@@ -21,11 +21,13 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run api:lint
+      - run: npm run api:bundle
       - run: npm run api:docs
       - name: Check generated API reference
         run: |
+          git ls-files --error-unmatch api-contract/data-registry-api.yaml
           git ls-files --error-unmatch api-contract/data-registry-api.html
-          git diff --exit-code -- api-contract/data-registry-api.html
+          git diff --exit-code -- api-contract/data-registry-api.yaml api-contract/data-registry-api.html
 
   deploy:
     needs: api-docs

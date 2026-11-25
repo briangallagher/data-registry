@@ -1,0 +1,15 @@
+type: object
+properties:
+  defaults:
+    type: object
+    additionalProperties:
+      type: string
+  overrides:
+    type: object
+    additionalProperties:
+      type: string
+  endpoints:
+    type: array
+    items:
+      type: string
+    description: List of supported endpoint signatures.

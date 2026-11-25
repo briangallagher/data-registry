@@ -1,0 +1,11 @@
+type: object
+required: [updates]
+properties:
+  requirements:
+    type: array
+    items:
+      $ref: ./TableRequirement.yaml
+  updates:
+    type: array
+    items:
+      $ref: ./TableUpdate.yaml

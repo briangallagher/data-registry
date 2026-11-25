@@ -1,0 +1,15 @@
+type: object
+required: [updated, removed, missing]
+properties:
+  updated:
+    type: array
+    items:
+      type: string
+  removed:
+    type: array
+    items:
+      type: string
+  missing:
+    type: array
+    items:
+      type: string

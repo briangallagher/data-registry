@@ -1,0 +1,17 @@
+type: object
+required: [name, schema]
+properties:
+  name:
+    type: string
+  schema:
+    $ref: ./IcebergSchema.yaml
+  location:
+    type: string
+  properties:
+    type: object
+    additionalProperties:
+      type: string
+  partition-spec:
+    $ref: ./PartitionSpec.yaml
+  sort-order:
+    $ref: ./SortOrder.yaml

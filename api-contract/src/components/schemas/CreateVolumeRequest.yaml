@@ -1,0 +1,7 @@
+description: Request model for registering an unstructured asset. Both storage references are optional.
+allOf:
+  - $ref: ./CreateAssetRequest.yaml
+  - type: object
+    properties:
+      format:
+        $ref: ./UnstructuredFormat.yaml

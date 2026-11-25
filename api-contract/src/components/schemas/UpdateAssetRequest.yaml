@@ -1,0 +1,76 @@
+type: object
+description: |
+  Partial update for an asset. Only provided fields are updated. The owner is immutable,
+  assigned at creation from the authenticated creator identity, and cannot be updated.
+  The collection is part of the resource path and cannot be changed by these operations.
+  The asset name, format, and server-managed identity fields cannot be cleared. Send null
+  to clear a nullable field. Use `remove_labels` to remove labels and `remove_properties`
+  to remove custom property keys. If a property key is present in both `properties` and
+  `remove_properties`, the request is rejected with 400 before the asset
+  is saved.
+properties:
+  format:
+    type: string
+    description: Asset format. The concrete allowed values are defined by the asset type.
+  storage_location:
+    type: ['string', 'null']
+    description: Optional direct storage location. A null value clears it; metadata-only assets may omit it.
+  connection_ref:
+    anyOf:
+      - $ref: ./ConnectionRef.yaml
+      - type: 'null'
+    description: |
+      Optional connection reference. A valid reference replaces the association; omission
+      preserves the existing association. A null value clears it.
+  description:
+    type: ['string', 'null']
+    description: Asset description. A null value clears it.
+  purpose:
+    type: ['string', 'null']
+    description: Intended use of the data. Updates `properties.purpose` when supplied. Null clears.
+  license:
+    anyOf:
+      - $ref: ./LicenseType.yaml
+      - type: 'null'
+    description: Data license or usage terms. Updates `properties.license` when supplied. Null clears.
+  maturity:
+    anyOf:
+      - $ref: ./MaturityType.yaml
+      - type: 'null'
+    description: "Lifecycle stage. Updates `properties.maturity` when supplied. Null clears."
+  domain:
+    type: ['string', 'null']
+    description: Business domain. Updates `properties.domain` when supplied. Null clears.
+  pii:
+    anyOf:
+      - $ref: ./PiiStatus.yaml
+      - type: 'null'
+    description: PII classification. Updates `properties.pii` when supplied. Null clears.
+  add_labels:
+    type: array
+    items:
+      type: string
+    description: Labels to add to this asset. Existing labels are preserved.
+  remove_labels:
+    type: array
+    items:
+      type: string
+    description: Labels to remove from this asset.
+  remove_properties:
+    type: array
+    items:
+      type: string
+    description: |
+      Property keys to remove from the asset. Only user-defined (custom)
+      keys may be removed. Governance keys (purpose, license, maturity,
+      domain, pii) are rejected with 400. Keys in both properties and
+      remove_properties are rejected with 400.
+  properties:
+    type: object
+    additionalProperties:
+      type: string
+    description: |
+      Arbitrary metadata updates. Keys are merged into the existing
+      property map; omitted keys remain unchanged. To remove a key,
+      use remove_properties. Governance keys use purpose, license,
+      maturity, domain, and pii.

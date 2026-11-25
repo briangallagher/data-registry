@@ -1,0 +1,5 @@
+description: Authenticated caller is not authorized for the requested project or resource
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/ErrorResponse.yaml

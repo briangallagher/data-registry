@@ -1,0 +1,12 @@
+description: Request model for registering a table via the generic-tables extension.
+allOf:
+  - $ref: ./CreateAssetRequest.yaml
+  - type: object
+    properties:
+      format:
+        $ref: ./StructuredFormat.yaml
+      schema_fields:
+        type: array
+        items:
+          $ref: ./SchemaField.yaml
+        description: Column definitions for the table schema.

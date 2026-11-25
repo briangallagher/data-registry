@@ -1,0 +1,3 @@
+type: string
+enum: [none, contains-pii, contains-sensitive, anonymized]
+description: PII classification for an asset.

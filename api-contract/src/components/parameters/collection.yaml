@@ -1,0 +1,6 @@
+name: collection
+in: path
+required: true
+schema:
+  type: string
+description: Collection name within the project

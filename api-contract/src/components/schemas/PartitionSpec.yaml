@@ -1,0 +1,9 @@
+type: object
+properties:
+  spec-id:
+    type: integer
+    default: 0
+  fields:
+    type: array
+    items: {}
+    default: []

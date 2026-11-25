@@ -1,0 +1,15 @@
+type: object
+description: |
+  Current catalog metadata uses primitive Iceberg type names as strings.
+  Nested struct, list, and map type objects are not supported by this schema.
+required: [id, name, required, type]
+properties:
+  id:
+    type: integer
+  name:
+    type: string
+  required:
+    type: boolean
+  type:
+    type: string
+    description: Primitive Iceberg type name, such as string or long

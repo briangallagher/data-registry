@@ -1,0 +1,50 @@
+type: object
+required: [name, uuid, collection, owner, created_at, updated_at]
+properties:
+  name:
+    type: string
+  uuid:
+    type: string
+    format: uuid
+    description: Stable asset identifier (UUID4). Survives renames and collection moves.
+  storage_location:
+    type: ['string', 'null']
+    description: Optional direct storage location. May be null for connection-backed or metadata-only assets.
+  columns:
+    type: ['array', 'null']
+    items:
+      $ref: ./SchemaField.yaml
+    description: Column definitions for structured tables; null for unstructured volumes.
+  collection:
+    type: string
+  connection_ref:
+    anyOf:
+      - $ref: ./ConnectionRef.yaml
+      - type: 'null'
+    description: Optional connection reference. May be null for direct-location or metadata-only assets.
+  owner:
+    type: string
+    description: Owner of the asset, assigned by the server from the authenticated creator identity. Immutable after creation.
+  description:
+    type: ['string', 'null']
+  labels:
+    type: ['array', 'null']
+    items:
+      type: string
+    description: Labels assigned to this asset for grouping and filtering
+  properties:
+    type: ['object', 'null']
+    additionalProperties:
+      type: string
+    description: |
+      Arbitrary metadata. Governance request fields round-trip through the canonical
+      keys `purpose`, `license`, `maturity`, `domain`, and `pii`. The top-level `owner`
+      and `description` fields are not duplicated here.
+  created_at:
+    type: string
+    format: date-time
+    description: Creation timestamp in ISO 8601 format
+  updated_at:
+    type: string
+    format: date-time
+    description: Last update timestamp in ISO 8601 format

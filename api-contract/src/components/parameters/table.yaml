@@ -1,0 +1,6 @@
+name: table
+in: path
+required: true
+schema:
+  type: string
+description: Table or asset name

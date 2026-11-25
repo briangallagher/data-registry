@@ -1,0 +1,7 @@
+type: object
+required: [source, destination]
+properties:
+  source:
+    $ref: ./TableIdentifier.yaml
+  destination:
+    $ref: ./TableIdentifier.yaml

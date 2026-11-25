@@ -1,0 +1,5 @@
+type: string
+enum: [documents, images, audio, video, binary, other]
+description: |
+  Supported format for an unstructured asset. UI labels are Documents, Images, Audio,
+  Video, Binary, and Other.

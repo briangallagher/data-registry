@@ -1,6 +1,9 @@
 # Data Registry API reference
 
-[`data-registry-api.yaml`](data-registry-api.yaml) is the OpenAPI 3.1 contract, with
+Edit [`src/openapi.yaml`](src/openapi.yaml) and its reusable components under
+[`src/components/`](src/components/). The bundled
+[`data-registry-api.yaml`](data-registry-api.yaml) is the published OpenAPI 3.1
+contract, with
 `info.version` set to `0.9.0`. The API is introduced in RHOAI 3.6; the contract
 version and the RHOAI release version serve different purposes.
 
@@ -18,8 +21,9 @@ the pinned Redocly CLI:
 ```bash
 npm ci
 npm run api:lint
+npm run api:bundle
 npm run api:docs
 ```
 
-Run these commands from the repository root. CI checks that the committed HTML
-matches the YAML source.
+Run these commands from the repository root. CI checks that the committed YAML
+and HTML match the source.

@@ -1,0 +1,15 @@
+type: object
+description: Iceberg REST error format. Used by all endpoints.
+required: [error]
+properties:
+  error:
+    type: object
+    required: [message, type, code]
+    properties:
+      message:
+        type: string
+      type:
+        type: string
+        description: Exception class name (e.g. NoSuchTableException, AlreadyExistsError)
+      code:
+        type: integer

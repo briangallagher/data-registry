@@ -1,0 +1,12 @@
+type: object
+required: [query, results, pagination]
+properties:
+  query:
+    type: string
+    description: Echo of the request `query` parameter
+  results:
+    type: array
+    items:
+      $ref: ./SearchResult.yaml
+  pagination:
+    $ref: ./SearchPagination.yaml

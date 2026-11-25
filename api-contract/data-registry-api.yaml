@@ -52,14 +52,14 @@ info:
   license:
     name: Apache-2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
-
 servers:
   - url: https://{host}
     description: Data Registry server (via kube-rbac-proxy sidecar)
     variables:
       host:
         default: feast-data-registry.redhat-ods-applications.svc:8443
-
+security:
+  - bearerAuth: []
 tags:
   - name: discovery
     description: Bootstrap and project configuration
@@ -86,15 +86,7 @@ tags:
       relationships — an asset can have multiple labels. Labels are managed
       at the project level (create/delete) and assigned per asset (add/remove).
     x-rhoai-extension: true
-
-security:
-  - bearerAuth: []
-
 paths:
-  # ===========================================================================
-  # Discovery
-  # ===========================================================================
-
   /v1/config:
     get:
       operationId: getBootstrapConfig
@@ -103,7 +95,8 @@ paths:
         Bootstrap endpoint per Iceberg REST spec. PyIceberg and Spark call this
         before any prefixed requests. Returns the prefix override so subsequent
         calls use `/v1/{project}/...`.
-      tags: [discovery]
+      tags:
+        - discovery
       parameters:
         - name: warehouse
           in: query
@@ -111,66 +104,62 @@ paths:
             type: string
           description: RHOAI project name to use as prefix
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: Server configuration
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DataRegistryConfig'
-
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
   /v1/{project}/config:
     get:
       operationId: getProjectConfig
       summary: Project configuration
       description: Returns server configuration and available endpoints for the given project.
-      tags: [discovery]
+      tags:
+        - discovery
       parameters:
         - $ref: '#/components/parameters/project'
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: Server configuration
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DataRegistryConfig'
-
-  # ===========================================================================
-  # Namespaces (Collections)
-  # ===========================================================================
-
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
   /v1/{project}/namespaces:
     get:
       operationId: listNamespaces
       summary: List collections
       description: Lists all collections (Iceberg namespaces) within the project. A `default` collection is always present.
-      tags: [namespaces]
+      tags:
+        - namespaces
       parameters:
         - $ref: '#/components/parameters/project'
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: List of namespace arrays
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListNamespacesResponse'
-
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
     post:
       operationId: createNamespace
       summary: Create collection
       description: Creates a new collection within the project.
-      tags: [namespaces]
+      tags:
+        - namespaces
       parameters:
         - $ref: '#/components/parameters/project'
       requestBody:
@@ -180,73 +169,73 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateNamespaceRequest'
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: Collection created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/NamespaceResponse'
-        '409':
-          $ref: '#/components/responses/Conflict'
-
-  /v1/{project}/namespaces/{collection}:
-    get:
-      operationId: getNamespace
-      summary: Get collection details
-      tags: [namespaces]
-      parameters:
-        - $ref: '#/components/parameters/project'
-        - $ref: '#/components/parameters/collection'
-      responses:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /v1/{project}/namespaces/{collection}:
+    get:
+      operationId: getNamespace
+      summary: Get collection details
+      tags:
+        - namespaces
+      parameters:
+        - $ref: '#/components/parameters/project'
+        - $ref: '#/components/parameters/collection'
+      responses:
         '200':
           description: Collection details
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/NamespaceResponse'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-    head:
-      operationId: namespaceExists
-      summary: Check collection exists
-      tags: [namespaces]
-      parameters:
-        - $ref: '#/components/parameters/project'
-        - $ref: '#/components/parameters/collection'
-      responses:
-        '401':
-          $ref: '#/components/responses/UnauthorizedHead'
-        '403':
-          $ref: '#/components/responses/ForbiddenHead'
-        '204':
-          description: Collection exists
-        '404':
-          $ref: '#/components/responses/NotFoundHead'
-
-    delete:
-      operationId: dropNamespace
-      summary: Delete empty collection
-      description: Fails if the collection contains any assets.
-      tags: [namespaces]
-      parameters:
-        - $ref: '#/components/parameters/project'
-        - $ref: '#/components/parameters/collection'
-      responses:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    head:
+      operationId: namespaceExists
+      summary: Check collection exists
+      tags:
+        - namespaces
+      parameters:
+        - $ref: '#/components/parameters/project'
+        - $ref: '#/components/parameters/collection'
+      responses:
+        '204':
+          description: Collection exists
+        '401':
+          $ref: '#/components/responses/UnauthorizedHead'
+        '403':
+          $ref: '#/components/responses/ForbiddenHead'
+        '404':
+          $ref: '#/components/responses/NotFoundHead'
+    delete:
+      operationId: dropNamespace
+      summary: Delete empty collection
+      description: Fails if the collection contains any assets.
+      tags:
+        - namespaces
+      parameters:
+        - $ref: '#/components/parameters/project'
+        - $ref: '#/components/parameters/collection'
+      responses:
         '204':
           description: Collection deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
         '409':
@@ -255,12 +244,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
   /v1/{project}/namespaces/{collection}/properties:
     post:
       operationId: updateNamespaceProperties
       summary: Update collection properties
-      tags: [namespaces]
+      tags:
+        - namespaces
       parameters:
         - $ref: '#/components/parameters/project'
         - $ref: '#/components/parameters/collection'
@@ -271,47 +260,43 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateNamespacePropertiesRequest'
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: Properties updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UpdateNamespacePropertiesResponse'
-
-  # ===========================================================================
-  # Tables (Iceberg REST)
-  # ===========================================================================
-
-  /v1/{project}/namespaces/{collection}/tables:
-    get:
-      operationId: listTables
-      summary: List Iceberg tables
-      description: >
-        Lists tables with format "iceberg" only. For all formats, use the generic-tables endpoint.
-      tags: [tables]
-      parameters:
-        - $ref: '#/components/parameters/project'
-        - $ref: '#/components/parameters/collection'
-      responses:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /v1/{project}/namespaces/{collection}/tables:
+    get:
+      operationId: listTables
+      summary: List Iceberg tables
+      description: |
+        Lists tables with format "iceberg" only. For all formats, use the generic-tables endpoint.
+      tags:
+        - tables
+      parameters:
+        - $ref: '#/components/parameters/project'
+        - $ref: '#/components/parameters/collection'
+      responses:
         '200':
           description: List of table identifiers
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListTablesResponse'
-
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
     post:
       operationId: createTable
       summary: Register Iceberg table
-      tags: [tables]
+      tags:
+        - tables
       parameters:
         - $ref: '#/components/parameters/project'
         - $ref: '#/components/parameters/collection'
@@ -322,19 +307,18 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateTableRequest'
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: Table registered
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoadTableResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '409':
           $ref: '#/components/responses/Conflict'
-
   /v1/{project}/namespaces/{collection}/tables/{table}:
     get:
       operationId: loadTable
@@ -346,50 +330,51 @@ paths:
         registered schema.
 
         Only returns tables with format "iceberg". Non-iceberg tables return 404.
-      tags: [tables]
+      tags:
+        - tables
       parameters:
         - $ref: '#/components/parameters/project'
         - $ref: '#/components/parameters/collection'
         - $ref: '#/components/parameters/table'
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: Table metadata
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoadTableResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
     head:
       operationId: tableExists
       summary: Check table exists
-      tags: [tables]
+      tags:
+        - tables
       parameters:
         - $ref: '#/components/parameters/project'
         - $ref: '#/components/parameters/collection'
         - $ref: '#/components/parameters/table'
       responses:
+        '204':
+          description: Table exists
         '401':
           $ref: '#/components/responses/UnauthorizedHead'
         '403':
           $ref: '#/components/responses/ForbiddenHead'
-        '204':
-          description: Table exists
         '404':
           $ref: '#/components/responses/NotFoundHead'
-
     post:
       operationId: updateTable
       summary: Update table properties
       description: |
         Supports `set-properties` and `remove-properties` actions only.
         Other Iceberg update actions (e.g. `add-schema`) return `501 Not Implemented`.
-      tags: [tables]
+      tags:
+        - tables
       parameters:
         - $ref: '#/components/parameters/project'
         - $ref: '#/components/parameters/collection'
@@ -401,16 +386,16 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateTableRequest'
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: Table updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoadTableResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
         '501':
@@ -419,30 +404,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
     delete:
       operationId: dropTable
       summary: Drop table
-      tags: [tables]
+      tags:
+        - tables
       parameters:
         - $ref: '#/components/parameters/project'
         - $ref: '#/components/parameters/collection'
         - $ref: '#/components/parameters/table'
       responses:
+        '204':
+          description: Table deleted
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '204':
-          description: Table deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /v1/{project}/tables/rename:
     post:
       operationId: renameTable
       summary: Rename / move table across collections
-      tags: [tables]
+      tags:
+        - tables
       parameters:
         - $ref: '#/components/parameters/project'
       requestBody:
@@ -452,46 +437,42 @@ paths:
             schema:
               $ref: '#/components/schemas/RenameTableRequest'
       responses:
+        '204':
+          description: Table renamed
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '204':
-          description: Table renamed
         '404':
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-
-  # ===========================================================================
-  # Volumes (RHOAI Extension)
-  # ===========================================================================
-
   /v1/{project}/namespaces/{collection}/volumes:
     get:
       operationId: listVolumes
       summary: List volumes
-      tags: [volumes]
+      tags:
+        - volumes
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
         - $ref: '#/components/parameters/collection'
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: List of volumes
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListVolumesResponse'
-
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
     post:
       operationId: createVolume
       summary: Register volume
-      tags: [volumes]
+      tags:
+        - volumes
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
@@ -503,68 +484,68 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateVolumeRequest'
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: Volume registered
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnstructuredAssetResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '409':
           $ref: '#/components/responses/Conflict'
-
   /v1/{project}/namespaces/{collection}/volumes/{volume}:
     get:
       operationId: getVolume
       summary: Get volume
       description: Returns volume details.
-      tags: [volumes]
+      tags:
+        - volumes
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
         - $ref: '#/components/parameters/collection'
         - $ref: '#/components/parameters/volume'
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: Volume details
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnstructuredAssetResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
     head:
       operationId: volumeExists
       summary: Check volume exists
-      tags: [volumes]
+      tags:
+        - volumes
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
         - $ref: '#/components/parameters/collection'
         - $ref: '#/components/parameters/volume'
       responses:
+        '204':
+          description: Volume exists
         '401':
           $ref: '#/components/responses/UnauthorizedHead'
         '403':
           $ref: '#/components/responses/ForbiddenHead'
-        '204':
-          description: Volume exists
         '404':
           $ref: '#/components/responses/NotFoundHead'
-
     patch:
       operationId: updateVolume
       summary: Update volume
       description: Partial update. All fields are optional — only provided fields are updated.
-      tags: [volumes]
+      tags:
+        - volumes
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
@@ -577,44 +558,39 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateVolumeRequest'
       responses:
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: Volume updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnstructuredAssetResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
     delete:
       operationId: deleteVolume
       summary: Delete volume
-      tags: [volumes]
+      tags:
+        - volumes
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
         - $ref: '#/components/parameters/collection'
         - $ref: '#/components/parameters/volume'
       responses:
+        '204':
+          description: Volume deleted
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '204':
-          description: Volume deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
-  # ===========================================================================
-  # Generic Tables (RHOAI Extension — multi-format)
-  # ===========================================================================
-
   /v1/{project}/namespaces/{collection}/generic-tables:
     get:
       operationId: listGenericTables
@@ -626,7 +602,8 @@ paths:
 
         Note: only returns assets with `asset_type: table`. Volumes and databases
         are not included.
-      tags: [generic-tables]
+      tags:
+        - generic-tables
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
@@ -637,17 +614,16 @@ paths:
             type: string
           description: Filter results to assets that have this label
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: List of table assets across all formats
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListGenericTablesResponse'
-
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
     post:
       operationId: createGenericTable
       summary: Register table with extended metadata
@@ -661,7 +637,8 @@ paths:
         `kubeflow-userid`; those headers are trusted only on the internal proxy-to-Feast path
         and are not client-provided identity claims. The owner is returned in the asset
         response and cannot be supplied or changed by the client.
-      tags: [generic-tables]
+      tags:
+        - generic-tables
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
@@ -673,62 +650,61 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateGenericTableRequest'
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '201':
           description: Asset registered
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/StructuredAssetResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '409':
           $ref: '#/components/responses/Conflict'
-
   /v1/{project}/namespaces/{collection}/generic-tables/{table}:
     get:
       operationId: getGenericTable
       summary: Get table asset details
-      tags: [generic-tables]
+      tags:
+        - generic-tables
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
         - $ref: '#/components/parameters/collection'
         - $ref: '#/components/parameters/table'
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: Asset details
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/StructuredAssetResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
     delete:
       operationId: deleteGenericTable
       summary: Delete table asset
-      tags: [generic-tables]
+      tags:
+        - generic-tables
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
         - $ref: '#/components/parameters/collection'
         - $ref: '#/components/parameters/table'
       responses:
+        '204':
+          description: Asset deleted
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '204':
-          description: Asset deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
     patch:
       operationId: updateGenericTable
       summary: Partially update a table asset
@@ -736,7 +712,8 @@ paths:
         Updates specified fields on an existing table asset. Only provided fields
         are modified — omitted fields remain unchanged. If `schema_fields` is
         provided, it replaces the entire schema.
-      tags: [generic-tables]
+      tags:
+        - generic-tables
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
@@ -749,25 +726,20 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateGenericTableRequest'
       responses:
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: Updated asset
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/StructuredAssetResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
-  # ===========================================================================
-  # Labels (RHOAI Extension)
-  # ===========================================================================
-
   /v1/{project}/labels:
     get:
       operationId: listLabels
@@ -776,22 +748,22 @@ paths:
         Returns a sorted list of all labels available in the project.
         Includes both explicitly created labels and labels discovered
         from assets.
-      tags: [labels]
+      tags:
+        - labels
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: List of label names
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LabelListResponse'
-
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
     post:
       operationId: createLabel
       summary: Create a label
@@ -799,7 +771,8 @@ paths:
         Creates a new label in the project. The label becomes available
         for assignment to assets. Creating a label that already exists
         returns 409.
-      tags: [labels]
+      tags:
+        - labels
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
@@ -810,19 +783,18 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateLabelRequest'
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '201':
           description: Label created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LabelResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '409':
           $ref: '#/components/responses/Conflict'
-
   /v1/{project}/labels/{label}:
     delete:
       operationId: deleteLabel
@@ -830,7 +802,8 @@ paths:
       description: |
         Removes a label from the project. Assets that currently have this
         label will have it removed automatically.
-      tags: [labels]
+      tags:
+        - labels
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
@@ -841,19 +814,14 @@ paths:
             type: string
           description: Label name to delete
       responses:
+        '204':
+          description: Label deleted
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '204':
-          description: Label deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
-  # ===========================================================================
-  # Search (RHOAI Extension)
-  # ===========================================================================
-
   /v1/{project}/search:
     get:
       operationId: searchDataRegistry
@@ -920,7 +888,8 @@ paths:
 
         **Errors.** Validation failures use Iceberg `ErrorResponse`
         `{error: {message, type, code}}`.
-      tags: [search]
+      tags:
+        - search
       x-rhoai-extension: true
       parameters:
         - $ref: '#/components/parameters/project'
@@ -981,14 +950,18 @@ paths:
           in: query
           schema:
             type: string
-            enum: [score, name]
+            enum:
+              - score
+              - name
             default: score
           description: Sort by score or alphabetical name
         - name: sort_order
           in: query
           schema:
             type: string
-            enum: [asc, desc]
+            enum:
+              - asc
+              - desc
           description: |
             Sort direction. When omitted: `desc` if `sort_by=score`, `asc`
             if `sort_by=name`.
@@ -1021,12 +994,6 @@ paths:
             is validated even when `page_size` is present; values above 500
             return 400.
       responses:
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '200':
           description: Search results with nested pagination
           content:
@@ -1037,7 +1004,8 @@ paths:
                 query: ''
                 results:
                   - type: table
-                    namespace: [default]
+                    namespace:
+                      - default
                     name: sample-table
                     description: null
                     properties: {}
@@ -1047,11 +1015,12 @@ paths:
                   limit: 50
                   totalCount: 1
                   totalPages: 1
-
-# =============================================================================
-# Components
-# =============================================================================
-
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 components:
   securitySchemes:
     bearerAuth:
@@ -1062,7 +1031,6 @@ components:
         Kubernetes bearer token. For dashboard users, this is the OAuth token
         forwarded by the BFF via `Authorization: Bearer`. For notebooks and engines,
         this is the ServiceAccount token.
-
   parameters:
     project:
       name: project
@@ -1071,7 +1039,6 @@ components:
       schema:
         type: string
       description: RHOAI project name (K8s namespace)
-
     collection:
       name: collection
       in: path
@@ -1079,7 +1046,6 @@ components:
       schema:
         type: string
       description: Collection name within the project
-
     table:
       name: table
       in: path
@@ -1087,7 +1053,6 @@ components:
       schema:
         type: string
       description: Table or asset name
-
     volume:
       name: volume
       in: path
@@ -1095,7 +1060,6 @@ components:
       schema:
         type: string
       description: Volume name
-
   responses:
     NotFound:
       description: Resource not found
@@ -1103,47 +1067,37 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-
     Conflict:
       description: Resource already exists
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-
     BadRequest:
       description: Invalid request parameters
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-
     Unauthorized:
       description: Missing or invalid authentication token
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-
     Forbidden:
       description: Authenticated caller is not authorized for the requested project or resource
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-
     NotFoundHead:
       description: Resource not found; HEAD responses have no body
-
     UnauthorizedHead:
       description: Missing or invalid authentication token; HEAD responses have no body
-
     ForbiddenHead:
       description: Authenticated caller is not authorized; HEAD responses have no body
-
   schemas:
-    # ----- Connection Reference -----
-
     ConnectionRef:
       type: object
       description: |
@@ -1157,40 +1111,45 @@ components:
       oneOf:
         - $ref: '#/components/schemas/DchConnectionRef'
         - $ref: '#/components/schemas/SecretConnectionRef'
-
     DchConnectionRef:
       type: object
-      required: [type, id]
+      required:
+        - type
+        - id
       properties:
         type:
           type: string
-          enum: [dch]
+          enum:
+            - dch
         id:
           type: string
           format: uuid
           description: The UUID of the DCH DataConnection
-
     SecretConnectionRef:
       type: object
-      required: [type, secret_name]
+      required:
+        - type
+        - secret_name
       properties:
         type:
           type: string
-          enum: [secret]
+          enum:
+            - secret
         secret_name:
           type: string
           description: The name of the RHAI Connection Secret
-
-    # ----- Error Schemas -----
-
     ErrorResponse:
       type: object
       description: Iceberg REST error format. Used by all endpoints.
-      required: [error]
+      required:
+        - error
       properties:
         error:
           type: object
-          required: [message, type, code]
+          required:
+            - message
+            - type
+            - code
           properties:
             message:
               type: string
@@ -1199,9 +1158,6 @@ components:
               description: Exception class name (e.g. NoSuchTableException, AlreadyExistsError)
             code:
               type: integer
-
-    # ----- Discovery -----
-
     DataRegistryConfig:
       type: object
       properties:
@@ -1218,12 +1174,10 @@ components:
           items:
             type: string
           description: List of supported endpoint signatures.
-
-    # ----- Namespaces -----
-
     CreateNamespaceRequest:
       type: object
-      required: [namespace]
+      required:
+        - namespace
       properties:
         namespace:
           type: array
@@ -1236,10 +1190,11 @@ components:
           type: object
           additionalProperties:
             type: string
-
     NamespaceResponse:
       type: object
-      required: [namespace, properties]
+      required:
+        - namespace
+        - properties
       properties:
         namespace:
           type: array
@@ -1251,10 +1206,10 @@ components:
           type: object
           additionalProperties:
             type: string
-
     ListNamespacesResponse:
       type: object
-      required: [namespaces]
+      required:
+        - namespaces
       properties:
         namespaces:
           type: array
@@ -1264,7 +1219,6 @@ components:
             maxItems: 1
             items:
               type: string
-
     UpdateNamespacePropertiesRequest:
       type: object
       properties:
@@ -1276,10 +1230,12 @@ components:
           type: array
           items:
             type: string
-
     UpdateNamespacePropertiesResponse:
       type: object
-      required: [updated, removed, missing]
+      required:
+        - updated
+        - removed
+        - missing
       properties:
         updated:
           type: array
@@ -1293,12 +1249,11 @@ components:
           type: array
           items:
             type: string
-
-    # ----- Tables (Iceberg) -----
-
     TableIdentifier:
       type: object
-      required: [namespace, name]
+      required:
+        - namespace
+        - name
       properties:
         namespace:
           type: array
@@ -1308,13 +1263,16 @@ components:
             type: string
         name:
           type: string
-
     IcebergField:
       type: object
       description: |
         Current catalog metadata uses primitive Iceberg type names as strings.
         Nested struct, list, and map type objects are not supported by this schema.
-      required: [id, name, required, type]
+      required:
+        - id
+        - name
+        - required
+        - type
       properties:
         id:
           type: integer
@@ -1325,7 +1283,6 @@ components:
         type:
           type: string
           description: Primitive Iceberg type name, such as string or long
-
     IcebergSchema:
       type: object
       properties:
@@ -1340,7 +1297,6 @@ components:
           items:
             $ref: '#/components/schemas/IcebergField'
           default: []
-
     PartitionSpec:
       type: object
       properties:
@@ -1351,7 +1307,6 @@ components:
           type: array
           items: {}
           default: []
-
     SortOrder:
       type: object
       properties:
@@ -1362,10 +1317,14 @@ components:
           type: array
           items: {}
           default: []
-
     TableMetadata:
       type: object
-      required: [table-uuid, location, last-updated-ms, properties, schemas]
+      required:
+        - table-uuid
+        - location
+        - last-updated-ms
+        - properties
+        - schemas
       properties:
         format-version:
           type: integer
@@ -1418,10 +1377,11 @@ components:
         current-snapshot-id:
           type: integer
           default: -1
-
     LoadTableResponse:
       type: object
-      required: [metadata-location, metadata]
+      required:
+        - metadata-location
+        - metadata
       properties:
         metadata-location:
           type: string
@@ -1432,10 +1392,11 @@ components:
           additionalProperties:
             type: string
           description: Reserved for future use. Currently empty.
-
     CreateTableRequest:
       type: object
-      required: [name, schema]
+      required:
+        - name
+        - schema
       properties:
         name:
           type: string
@@ -1451,19 +1412,19 @@ components:
           $ref: '#/components/schemas/PartitionSpec'
         sort-order:
           $ref: '#/components/schemas/SortOrder'
-
     ListTablesResponse:
       type: object
-      required: [identifiers]
+      required:
+        - identifiers
       properties:
         identifiers:
           type: array
           items:
             $ref: '#/components/schemas/TableIdentifier'
-
     TableUpdate:
       type: object
-      required: [action]
+      required:
+        - action
       properties:
         action:
           type: string
@@ -1483,10 +1444,10 @@ components:
         schema:
           $ref: '#/components/schemas/IcebergSchema'
           description: Schema for `add-schema` action (not supported in Phase 1)
-
     UpdateTableRequest:
       type: object
-      required: [updates]
+      required:
+        - updates
       properties:
         requirements:
           type: array
@@ -1496,10 +1457,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TableUpdate'
-
     TableRequirement:
       type: object
-      required: [type]
+      required:
+        - type
       properties:
         type:
           type: string
@@ -1509,47 +1470,66 @@ components:
           type: string
         last-assigned-field-id:
           type: integer
-
     RenameTableRequest:
       type: object
-      required: [source, destination]
+      required:
+        - source
+        - destination
       properties:
         source:
           $ref: '#/components/schemas/TableIdentifier'
         destination:
           $ref: '#/components/schemas/TableIdentifier'
-
-    # ----- Volumes -----
-
     UnstructuredFormat:
       type: string
-      enum: [documents, images, audio, video, binary, other]
+      enum:
+        - documents
+        - images
+        - audio
+        - video
+        - binary
+        - other
       description: |
         Supported format for an unstructured asset. UI labels are Documents, Images, Audio,
         Video, Binary, and Other.
-
     StructuredFormat:
       type: string
-      enum: [iceberg, parquet, csv, delta, postgresql, milvus, other]
+      enum:
+        - iceberg
+        - parquet
+        - csv
+        - delta
+        - postgresql
+        - milvus
+        - other
       description: |
         Supported format for a structured asset. UI labels are Apache Iceberg, Parquet, CSV,
         Delta Lake, PostgreSQL, Milvus, and Other.
-
     LicenseType:
       type: string
-      enum: [internal-use, cc-by-4.0, apache-2.0, proprietary, restricted]
+      enum:
+        - internal-use
+        - cc-by-4.0
+        - apache-2.0
+        - proprietary
+        - restricted
       description: Allowed data license values.
-
     MaturityType:
       type: string
-      enum: [experimental, staging, production, deprecated]
+      enum:
+        - experimental
+        - staging
+        - production
+        - deprecated
       description: Asset lifecycle stage.
-
     PiiStatus:
       type: string
-      enum: [none, contains-pii, contains-sensitive, anonymized]
+      enum:
+        - none
+        - contains-pii
+        - contains-sensitive
+        - anonymized
       description: PII classification for an asset.
-
     CreateAssetRequest:
       description: |
         Request model for registering an asset. Storage references are optional: metadata-only
@@ -1558,7 +1538,9 @@ components:
         not be included in the request. The collection is supplied by the required path
         parameter and is not part of the request body.
       type: object
-      required: [name, format]
+      required:
+        - name
+        - format
       properties:
         name:
           type: string
@@ -1574,10 +1556,14 @@ components:
             - type: 'null'
           description: Optional connection reference. Metadata-only assets may omit both storage references.
         description:
-          type: ['string', 'null']
+          type:
+            - string
+            - 'null'
           description: Optional description. A null value leaves the asset without a description.
         purpose:
-          type: ['string', 'null']
+          type:
+            - string
+            - 'null'
           description: Intended use of the data. Round-trips as `properties.purpose`.
         license:
           anyOf:
@@ -1588,9 +1574,11 @@ components:
           anyOf:
             - $ref: '#/components/schemas/MaturityType'
             - type: 'null'
-          description: "Lifecycle stage (e.g. experimental, staging, production, deprecated). Round-trips as `properties.maturity`."
+          description: Lifecycle stage (e.g. experimental, staging, production, deprecated). Round-trips as `properties.maturity`.
         domain:
-          type: ['string', 'null']
+          type:
+            - string
+            - 'null'
           description: Business domain. Round-trips as `properties.domain`.
         pii:
           anyOf:
@@ -1610,7 +1598,6 @@ components:
             Arbitrary metadata. Governance fields use the canonical keys `purpose`, `license`,
             `maturity`, `domain`, and `pii` when returned in the response `properties` map.
             Explicit properties are preserved alongside these mapped fields.
-
     CreateVolumeRequest:
       description: Request model for registering an unstructured asset. Both storage references are optional.
       allOf:
@@ -1619,7 +1606,6 @@ components:
           properties:
             format:
               $ref: '#/components/schemas/UnstructuredFormat'
-
     UpdateAssetRequest:
       type: object
       description: |
@@ -1636,7 +1622,9 @@ components:
           type: string
           description: Asset format. The concrete allowed values are defined by the asset type.
         storage_location:
-          type: ['string', 'null']
+          type:
+            - string
+            - 'null'
           description: Optional direct storage location. A null value clears it; metadata-only assets may omit it.
         connection_ref:
           anyOf:
@@ -1646,10 +1634,14 @@ components:
             Optional connection reference. A valid reference replaces the association; omission
             preserves the existing association. A null value clears it.
         description:
-          type: ['string', 'null']
+          type:
+            - string
+            - 'null'
           description: Asset description. A null value clears it.
         purpose:
-          type: ['string', 'null']
+          type:
+            - string
+            - 'null'
           description: Intended use of the data. Updates `properties.purpose` when supplied. Null clears.
         license:
           anyOf:
@@ -1660,9 +1652,11 @@ components:
           anyOf:
             - $ref: '#/components/schemas/MaturityType'
             - type: 'null'
-          description: "Lifecycle stage. Updates `properties.maturity` when supplied. Null clears."
+          description: Lifecycle stage. Updates `properties.maturity` when supplied. Null clears.
         domain:
-          type: ['string', 'null']
+          type:
+            - string
+            - 'null'
           description: Business domain. Updates `properties.domain` when supplied. Null clears.
         pii:
           anyOf:
@@ -1697,7 +1691,6 @@ components:
             property map; omitted keys remain unchanged. To remove a key,
             use remove_properties. Governance keys use purpose, license,
             maturity, domain, and pii.
-
     UpdateVolumeRequest:
       description: Partial update for an unstructured asset.
       allOf:
@@ -1706,21 +1699,20 @@ components:
           properties:
             format:
               $ref: '#/components/schemas/UnstructuredFormat'
-
     ListVolumesResponse:
       type: object
-      required: [volumes]
+      required:
+        - volumes
       properties:
         volumes:
           type: array
           items:
             $ref: '#/components/schemas/UnstructuredAssetResponse'
-
-    # ----- Schema -----
-
     SchemaField:
       type: object
-      required: [name, type]
+      required:
+        - name
+        - type
       description: A column definition in a table schema.
       properties:
         name:
@@ -1728,7 +1720,7 @@ components:
           description: Column name
         type:
           type: string
-          description: "Data type (e.g. string, integer, long, float, double, decimal, boolean, date, timestamp, binary)"
+          description: Data type (e.g. string, integer, long, float, double, decimal, boolean, date, timestamp, binary)
         description:
           type: string
           description: Human-readable column description
@@ -1736,9 +1728,6 @@ components:
           type: boolean
           default: true
           description: Whether the column accepts NULL values
-
-    # ----- Generic Tables (Extended) -----
-
     CreateGenericTableRequest:
       description: Request model for registering a table via the generic-tables extension.
       allOf:
@@ -1752,7 +1741,6 @@ components:
               items:
                 $ref: '#/components/schemas/SchemaField'
               description: Column definitions for the table schema.
-
     UpdateGenericTableRequest:
       description: Partial update for a generic-tables asset. All fields are optional — only provided fields are updated.
       allOf:
@@ -1766,10 +1754,15 @@ components:
               items:
                 $ref: '#/components/schemas/SchemaField'
               description: Replaces the entire schema. Omit to leave schema unchanged; provide an empty array to remove all schema fields.
-
     AssetResponseBase:
       type: object
-      required: [name, uuid, collection, owner, created_at, updated_at]
+      required:
+        - name
+        - uuid
+        - collection
+        - owner
+        - created_at
+        - updated_at
       properties:
         name:
           type: string
@@ -1778,10 +1771,14 @@ components:
           format: uuid
           description: Stable asset identifier (UUID4). Survives renames and collection moves.
         storage_location:
-          type: ['string', 'null']
+          type:
+            - string
+            - 'null'
           description: Optional direct storage location. May be null for connection-backed or metadata-only assets.
         columns:
-          type: ['array', 'null']
+          type:
+            - array
+            - 'null'
           items:
             $ref: '#/components/schemas/SchemaField'
           description: Column definitions for structured tables; null for unstructured volumes.
@@ -1796,14 +1793,20 @@ components:
           type: string
           description: Owner of the asset, assigned by the server from the authenticated creator identity. Immutable after creation.
         description:
-          type: ['string', 'null']
+          type:
+            - string
+            - 'null'
         labels:
-          type: ['array', 'null']
+          type:
+            - array
+            - 'null'
           items:
             type: string
           description: Labels assigned to this asset for grouping and filtering
         properties:
-          type: ['object', 'null']
+          type:
+            - object
+            - 'null'
           additionalProperties:
             type: string
           description: |
@@ -1818,81 +1821,84 @@ components:
           type: string
           format: date-time
           description: Last update timestamp in ISO 8601 format
-
     StructuredAssetResponse:
       description: Structured table asset response.
       allOf:
         - $ref: '#/components/schemas/AssetResponseBase'
         - type: object
-          required: [asset_type, format]
+          required:
+            - asset_type
+            - format
           properties:
             asset_type:
               const: table
               description: Asset type for structured table assets.
             format:
               $ref: '#/components/schemas/StructuredFormat'
-
     UnstructuredAssetResponse:
       description: Unstructured volume asset response.
       allOf:
         - $ref: '#/components/schemas/AssetResponseBase'
         - type: object
-          required: [asset_type, format]
+          required:
+            - asset_type
+            - format
           properties:
             asset_type:
               const: volume
               description: Asset type for unstructured volume assets.
             format:
               $ref: '#/components/schemas/UnstructuredFormat'
-
     ListGenericTablesResponse:
       type: object
-      required: [assets]
+      required:
+        - assets
       properties:
         assets:
           type: array
           items:
             $ref: '#/components/schemas/StructuredAssetResponse'
-
-    # ----- Labels -----
-
     LabelListResponse:
       type: object
-      required: [labels]
+      required:
+        - labels
       properties:
         labels:
           type: array
           items:
             type: string
           description: Sorted list of label names available in the project
-
     CreateLabelRequest:
       type: object
-      required: [name]
+      required:
+        - name
       properties:
         name:
           type: string
           description: Label name (must be unique within the project)
-
     LabelResponse:
       type: object
-      required: [name]
+      required:
+        - name
       properties:
         name:
           type: string
-
-    # ----- Search -----
-
     SearchResultType:
       type: string
-      enum: [table, volume, collection]
+      enum:
+        - table
+        - volume
+        - collection
       description: |
         Asset class on a search hit after alias resolution. Never `dataset`,
         `iceberg_table`, `document_collection`, or `vector_index`.
-
     SearchResult:
       type: object
-      required: [type, namespace, name, score]
+      required:
+        - type
+        - namespace
+        - name
+        - score
       properties:
         type:
           $ref: '#/components/schemas/SearchResultType'
@@ -1909,7 +1915,9 @@ components:
           type: string
           description: Unscoped asset name (not `project/collection/name`)
         description:
-          type: ['string', 'null']
+          type:
+            - string
+            - 'null'
         properties:
           type: object
           additionalProperties:
@@ -1920,10 +1928,11 @@ components:
         score:
           type: integer
           description: Relevance 100, 90, 80, 60, 40, or 0 (empty query)
-
     SearchPagination:
       type: object
-      required: [page, limit]
+      required:
+        - page
+        - limit
       properties:
         page:
           type: integer
@@ -1945,10 +1954,12 @@ components:
         hasPrevious:
           type: boolean
           description: Present only when true
-
     SearchResponse:
       type: object
-      required: [query, results, pagination]
+      required:
+        - query
+        - results
+        - pagination
       properties:
         query:
           type: string

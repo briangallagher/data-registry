@@ -1,0 +1,11 @@
+description: Structured table asset response.
+allOf:
+  - $ref: ./AssetResponseBase.yaml
+  - type: object
+    required: [asset_type, format]
+    properties:
+      asset_type:
+        const: table
+        description: Asset type for structured table assets.
+      format:
+        $ref: ./StructuredFormat.yaml

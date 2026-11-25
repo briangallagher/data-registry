@@ -1,0 +1,17 @@
+type: object
+required: [name, type]
+description: A column definition in a table schema.
+properties:
+  name:
+    type: string
+    description: Column name
+  type:
+    type: string
+    description: "Data type (e.g. string, integer, long, float, double, decimal, boolean, date, timestamp, binary)"
+  description:
+    type: string
+    description: Human-readable column description
+  nullable:
+    type: boolean
+    default: true
+    description: Whether the column accepts NULL values

@@ -1,0 +1,12 @@
+description: Partial update for a generic-tables asset. All fields are optional — only provided fields are updated.
+allOf:
+  - $ref: ./UpdateAssetRequest.yaml
+  - type: object
+    properties:
+      format:
+        $ref: ./StructuredFormat.yaml
+      schema_fields:
+        type: array
+        items:
+          $ref: ./SchemaField.yaml
+        description: Replaces the entire schema. Omit to leave schema unchanged; provide an empty array to remove all schema fields.

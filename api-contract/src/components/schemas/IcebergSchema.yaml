@@ -1,0 +1,13 @@
+type: object
+properties:
+  type:
+    type: string
+    default: struct
+  schema-id:
+    type: integer
+    default: 0
+  fields:
+    type: array
+    items:
+      $ref: ./IcebergField.yaml
+    default: []

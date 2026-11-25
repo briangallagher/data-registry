@@ -1,0 +1,7 @@
+type: object
+required: [volumes]
+properties:
+  volumes:
+    type: array
+    items:
+      $ref: ./UnstructuredAssetResponse.yaml

@@ -1,0 +1,5 @@
+type: string
+enum: [iceberg, parquet, csv, delta, postgresql, milvus, other]
+description: |
+  Supported format for a structured asset. UI labels are Apache Iceberg, Parquet, CSV,
+  Delta Lake, PostgreSQL, Milvus, and Other.

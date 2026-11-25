@@ -1,0 +1,29 @@
+type: object
+required: [type, namespace, name, score]
+properties:
+  type:
+    $ref: ./SearchResultType.yaml
+  namespace:
+    type: array
+    minItems: 1
+    maxItems: 1
+    items:
+      type: string
+    description: |
+      Collection name (SavedDataset.collection) as a one-element array.
+      Implicit `default` when the asset has no collection.
+  name:
+    type: string
+    description: Unscoped asset name (not `project/collection/name`)
+  description:
+    type: ['string', 'null']
+  properties:
+    type: object
+    additionalProperties:
+      type: string
+    description: |
+      User tags plus note keys (`purpose`, `license`, `maturity`,
+      `domain`, `pii`). Does not include `format`, `owner`, or labels.
+  score:
+    type: integer
+    description: Relevance 100, 90, 80, 60, 40, or 0 (empty query)
